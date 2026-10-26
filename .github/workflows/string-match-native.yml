@@ -1,0 +1,52 @@
+name: string matching native validation
+
+on:
+  push:
+    branches: [validation/string-match-native]
+
+permissions:
+  contents: read
+
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: driver
+      - uses: actions/checkout@v7
+        with:
+          ref: 7a23d8e3fedb010070ef1a03873c55500c7aa1a9
+          path: baseline
+      - uses: actions/checkout@v7
+        with:
+          ref: ce1ffb3945b358dc0f66a3d0cde3e5b53acb912b
+          path: fixed
+      - uses: actions/checkout@v7
+        with:
+          repository: tc39/test262
+          ref: 5ef1e5723be95296f36afb0386676fed0205869c
+          path: baseline/test262
+      - uses: actions/checkout@v7
+        with:
+          repository: tc39/test262
+          ref: 5ef1e5723be95296f36afb0386676fed0205869c
+          path: fixed/test262
+      - name: Set up Visual Studio shell
+        if: runner.os == 'Windows'
+        uses: egor-tensin/vs-shell@v2
+        with:
+          arch: x64
+      - name: Validate exact original and submitted source
+        run: python driver/validation/verify_string_match_platforms.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: string-match-${{ matrix.os }}
+          path: evidence/
+          if-no-files-found: error
