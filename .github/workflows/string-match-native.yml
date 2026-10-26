@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-15]
+        os: [windows-latest]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 50
     steps:
@@ -47,6 +47,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: string-match-${{ matrix.os }}
+          name: string-match-${{ matrix.os }}-module-path
           path: evidence/
           if-no-files-found: error

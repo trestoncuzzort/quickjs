@@ -135,7 +135,7 @@ def main():
         result, _ = run(label + "-regexp-api", [build / ("lre-test" + SUFFIX)], source)
         successful(result)
         for name in groups:
-            result, output = run(label + "-" + name, [qjs, "-m", fixture_dir / (name + ".mjs")], source)
+            result, output = run(label + "-" + name, [qjs, "-m", name + ".mjs"], fixture_dir)
             expected_failure = label == "base" and name != "test_regexp_create_exceptions"
             if expected_failure:
                 check(isinstance(result["returncode"], int) and result["returncode"] != 0,
@@ -148,7 +148,7 @@ def main():
                       result["name"] + " had a sanitizer failure instead of a regression assertion")
             else:
                 successful(result)
-        result, _ = run(label + "-whole-regression", [qjs, "-m", fixture_dir / "test_string_match.mjs"], source)
+        result, _ = run(label + "-whole-regression", [qjs, "-m", "test_string_match.mjs"], fixture_dir)
         if label == "base":
             check(isinstance(result["returncode"], int) and result["returncode"] != 0,
                   "original engine unexpectedly passed complete regression")
